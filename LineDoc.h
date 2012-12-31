@@ -1,9 +1,7 @@
 #ifndef LINE_DOC_H
 #define LINE_DOC_H
 
-#include "types.h"
-#include "gvar.h"
-// #include "Block.h"
+#include <stdint.h>
 
 #define IMAGER_LINES_MAX 1974
 #define LINEDOC_BSZ 32
@@ -18,35 +16,35 @@ namespace Gvar {
 
   class LineDoc{ 
   private: 
-	uint16 Spcid; //1 
-	uint16 Spsid; // 2
-	uint16 Lside; // 3
-	uint16 Lidet; // 4
+	uint16_t Spcid; //1 
+	uint16_t Spsid; // 2
+	uint16_t Lside; // 3
+	uint16_t Lidet; // 4
 	
 	
-	uint16 Licha; // 5
-	uint16 RisctMsb ; // 6 
-	uint16 RisctLsb; // 7 
+	uint16_t Licha; // 5
+	uint16_t RisctMsb ; // 6 
+	uint16_t RisctLsb; // 7 
 	
-	uint16 L1scan;   //8
-	uint16 L2scan;   //9
+	uint16_t L1scan;   //8
+	uint16_t L2scan;   //9
 	
-	uint16 LpixlsMsb; // 10 
-	uint16 LpixlsLsb; // 11
+	uint16_t LpixlsMsb; // 10 
+	uint16_t LpixlsLsb; // 11
 	
-	uint16 LwordsMsb; // 12 
-	uint16 LwordsLsb; // 13
+	uint16_t LwordsMsb; // 12 
+	uint16_t LwordsLsb; // 13
 	
-	uint16 Lzcor ;    // 14 
-	uint16 Llag  ;    // 15 
-	uint16 Lspar ;    // 16 
+	uint16_t Lzcor ;    // 14 
+	uint16_t Llag  ;    // 15 
+	uint16_t Lspar ;    // 16 
 	
 	// the data
-	uint16* data ;
+	uint16_t* data ;
 	
   public: 
 	LineDoc(Block* block) ; 
-	LineDoc(uint16* unpacked, int startpos) ;
+	LineDoc(uint16_t* unpacked, int startpos) ;
 	~LineDoc () ;
 	
 	int spcid() { return( Spcid ); }
@@ -54,7 +52,7 @@ namespace Gvar {
 	int lside() { return( Lside ); }
 	int lidet() { return( Lidet ); }
 	int licha() { return( Licha ); }
-	uint16 risct() {return(((uint16)RisctMsb<<10)+RisctLsb ); }
+	uint16_t risct() {return(((uint16_t)RisctMsb<<10)+RisctLsb ); }
 	int l1scan() { return( L1scan ) ; }
 	int l2scan() { return( L2scan ) ; }
 	int lpixls() { return( ((int)LpixlsMsb << 10) + LpixlsLsb ); } 
@@ -92,9 +90,9 @@ namespace Gvar {
 	
 	int side() { return((Lside)?1:0); }
 	
-	uint16* getData () { return data ; }
+	uint16_t* getData () { return data ; }
 	
-	LineDoc* next() { return (LineDoc*) ( (uint16*) this + lwords() ) ; }
+	LineDoc* next() { return (LineDoc*) ( (uint16_t*) this + lwords() ) ; }
 	
 	int valid();  
 	void print( ostream & ) ; 

@@ -7,7 +7,7 @@ namespace Gvar {
 	Header* header = block->getHeader () ;
 	int wordCount = header->wordCount () ;
 
-	uint16* unpacked=new uint16[MAX_BLOCK_SZ];
+	uint16_t* unpacked=new uint16_t[MAX_BLOCK_SZ];
 
 	if ((((wordCount-2)*10/8)/5)*4 > MAX_BLOCK_SZ) {
 	  fprintf(stderr, "wordCount is too large: %d. Truncate it to %d\n",
@@ -59,7 +59,7 @@ namespace Gvar {
 	  LwordsLsb = 0;
 	}
 	
-	data = new uint16[numOfPixels] ;
+	data = new uint16_t[numOfPixels] ;
 	for (int i=16; i<16+numOfPixels; i++) {
 	  data[i-16] = unpacked[i] ;
 	}
@@ -67,7 +67,7 @@ namespace Gvar {
 	delete[] unpacked ;
   }
  
-  LineDoc::LineDoc(uint16* unpacked, int startpos) {
+  LineDoc::LineDoc(uint16_t* unpacked, int startpos) {
     int i = startpos;
     if(startpos+16 < MAX_BLOCK_SZ) {
       Spcid = unpacked[i] ;
@@ -99,7 +99,7 @@ namespace Gvar {
 	  LwordsLsb = 0;
       }
 
-      data = new uint16[numOfPixels] ;
+      data = new uint16_t[numOfPixels] ;
 
       int k = 16 + startpos;
       for(int j = k; (j < k + numOfPixels) && (j < MAX_BLOCK_SZ); j++) {
@@ -113,11 +113,11 @@ namespace Gvar {
       LpixlsLsb = 0;
       LwordsMsb = 0;
       LwordsLsb = 0;
-      data = new uint16[0];
+      data = new uint16_t[0];
     }
 
 
-  }//LineDoc(uint16*,int)
+  }//LineDoc(uint16_t*,int)
 
   LineDoc::~LineDoc () {
     delete[] data ;

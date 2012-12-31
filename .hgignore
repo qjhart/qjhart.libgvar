@@ -1,0 +1,17 @@
+# use glob syntax.
+syntax: glob
+
+*.o
+*.lo
+*~
+*.la
+config.log
+config.status
+gvar_inspector
+block0file.*
+
+# switch to regexp syntax.
+syntax: regexp
+^\.libs/
+^\.deps/
+^autom4te.cache/

@@ -49,7 +49,7 @@ int recIndexFloat( int i ) {
 namespace Gvar {
   Block0Doc::Block0Doc(Block *block){
     this->block = block ;
-    uchar8* data = block->getData () ;
+    uint8_t* data = block->getData () ;
 
     Spcid = data[0] ;
     Spsid = data[1] ;
@@ -59,7 +59,7 @@ namespace Gvar {
 //    }
 
     // ISCAN Iscan;/* 3 6 */
-    Iscan = *((uint32*)&data[2]);	
+    Iscan = *((uint32_t*)&data[2]);	
 
     imc = (Iscan & 0x00800000) == 0x00800000; 
     flipflag = (Iscan & 0x00008000) == 0x00008000;
@@ -89,17 +89,17 @@ namespace Gvar {
     Tclmt.setTime (&data[134]) ;
     Tiona.setTime (&data[142]) ;
 
-    Risct = ((uint16)(data[150] << 8)) + ((uint16)data[151]) ;
-    Aisct = ((uint16)(data[152] << 8)) + ((uint16)data[153]) ;
-    Insln = ((uint16)(data[154] << 8)) + ((uint16)data[155]) ;
+    Risct = ((uint16_t)(data[150] << 8)) + ((uint16_t)data[151]) ;
+    Aisct = ((uint16_t)(data[152] << 8)) + ((uint16_t)data[153]) ;
+    Insln = ((uint16_t)(data[154] << 8)) + ((uint16_t)data[155]) ;
 
     // get Iwfpx, Iefpx, Infln, Isfln
-    Iwfpx = ((uint16)(data[156] << 8)) + ((uint16)data[157]) ;
-    Iefpx = ((uint16)(data[158] << 8)) + ((uint16)data[159]) ;
-    Infln = ((uint16)(data[160] << 8)) + ((uint16)data[161]) ;
-    Isfln = ((uint16)(data[162] << 8)) + ((uint16)data[163]) ;
+    Iwfpx = ((uint16_t)(data[156] << 8)) + ((uint16_t)data[157]) ;
+    Iefpx = ((uint16_t)(data[158] << 8)) + ((uint16_t)data[159]) ;
+    Infln = ((uint16_t)(data[160] << 8)) + ((uint16_t)data[161]) ;
+    Isfln = ((uint16_t)(data[162] << 8)) + ((uint16_t)data[163]) ;
 
-    Impdx = ((uint16)(data[164] << 8)) + ((uint16)data[165]) ;
+    Impdx = ((uint16_t)(data[164] << 8)) + ((uint16_t)data[165]) ;
 
     Sublo = gvarfloat2float( *((float*)&data[178]) );
 
@@ -145,28 +145,28 @@ namespace Gvar {
   
     Iofnc = data[6304]; /* 6305 */
     Iofec = data[6305]; /* 6306 */
-    Iofni = ((uint16)(data[6306] << 8)) + ((uint16)data[6307]); /* 6307 6308 */
-    Iofei = ((uint16)(data[6308] << 8)) + ((uint16)data[6309]); /* 6309 6310 */
+    Iofni = ((uint16_t)(data[6306] << 8)) + ((uint16_t)data[6307]); /* 6307 6308 */
+    Iofei = ((uint16_t)(data[6308] << 8)) + ((uint16_t)data[6309]); /* 6309 6310 */
 
   }//Block0Doc
 
 
-  // added by Haiyan uchar8 rec[336*4]; /* 279 1626*/
+  // added by Haiyan uint8_t rec[336*4]; /* 279 1626*/
 
 	const float* Block0Doc::getRec() {
 		return rec;
 	}
 
-        uchar8 Block0Doc::getIofnc() { 
+        uint8_t Block0Doc::getIofnc() { 
 		return Iofnc;
 	}/* 6305 */
-        uchar8 Block0Doc::getIofec() {
+        uint8_t Block0Doc::getIofec() {
 		return Iofec;
 	}  /* 6306 */
-        uint16 Block0Doc::getIofni() {
+        uint16_t Block0Doc::getIofni() {
 		return Iofni;
 	} /* 6307 6308 */
-        uint16 Block0Doc::getIofei() {
+        uint16_t Block0Doc::getIofei() {
 		return Iofei;
 	} /* 6309 6310 */
 

@@ -20,7 +20,7 @@ namespace Gvar {
 	return lineDoc ;
   }
   
-  uint16* Block3to10::getData () {
+  uint16_t* Block3to10::getData () {
 	return data ;
   }
   

@@ -191,7 +191,7 @@ void CdaTime::toIEEE(int* ieee){
 	     );
 }
 
-void CdaTime::setTime (uchar8* in) {
+void CdaTime::setTime (uint8_t* in) {
   
   yr1000 = in[0] >> 4 ;
   yr100 = in[0] & 0x0f ;

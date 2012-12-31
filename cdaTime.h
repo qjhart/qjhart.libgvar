@@ -5,10 +5,10 @@
 
 #include <iostream>
 #include <string.h>
+#include <stdint.h>
 #include <sstream>
 #include <time.h>
 #include <cstdio>
-#include "types.h"
 
 #include <errno.h>
 
@@ -46,7 +46,7 @@ class CdaTime{
   CdaTime(int * in);
   CdaTime(CdaTime & out);
 
-  void setTime (uchar8* in) ;
+  void setTime (uint8_t* in) ;
   int msec();
   int  sec();
   int  min();
@@ -61,7 +61,7 @@ class CdaTime{
   void timeStr( char * ); 
 
 //  string getConcatenatedTime();
-//  string getYMDEpoch(uchar8 Epoch);
+//  string getYMDEpoch(uint8_t Epoch);
 //  string getHM();
   char* getConcatenatedTime();
   char* getYMDEpoch(char* Epoch);

@@ -1,10 +1,9 @@
 #ifndef GVAR_H
 #define GVAR_H
 
-#include "types.h"
-
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #ifndef BUFSIZ 
 #define BUFSIZ 4096
@@ -23,6 +22,8 @@
 #endif
 
 #define ALL -1
+
+#define CRC16_OK 0xE2F0
 
 #define GVARBUFSIZ  BUFSIZ  
 #define MAX_BLOCK_SZ  52348 
@@ -86,7 +87,6 @@ static const int Side[INSTRUMENTS][CHANNELS] =
 
 inline int VALID(int a, int b) { return ((a==-1)?(b):(a)) ; } 
 
-
 namespace Gvar {
   class LineDoc;
   class Block;
@@ -96,12 +96,15 @@ namespace Gvar {
   class Block1or2;
   class Block3to10;
   // This function converts every 10 bits of a byte array to 16 bits.
-  void unpack10 (uchar8*, int, uint16*) ;
+  void unpack10 (uint8_t*, int, uint16_t*) ;
+
+  uint16_t crc16(uint8_t* ptr,uint16_t len);
 }
 
 #include "Block.h"
 #include "LineDoc.h"
 #include "Block0Doc.h"
+#include "Exception.h"
 
 #endif // GVAR_H
   

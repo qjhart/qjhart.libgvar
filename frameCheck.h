@@ -1,7 +1,6 @@
 #ifndef FRAME_CHECK
 #define FRAME_CHECK
 
-#include "include/gvar.h"
 #include "block0/imagerDoc.h"
 #include "block11/doc/sounderDoc.h"
 
