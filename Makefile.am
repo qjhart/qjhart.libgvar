@@ -10,9 +10,9 @@ libgvar_la_SOURCES=selFloat.cpp Header.cpp Block.cpp LineDoc.cpp crc16.cpp \
 unpack10.cpp cdaTime.cpp Block3to10.cpp \
 Block0.cpp Block0Doc.cpp Block1or2.cpp
 
-bin_PROGRAMS = gvar_inspector test
+bin_PROGRAMS = gvar_inspector gvar_test
 gvar_inspector_SOURCES = gvar_inspector.cpp GvarFile.cpp GvarFile.h
 gvar_inspector_LDADD = libgvar.la
 
-test_SOURCES = test.cpp
-test_LDADD = -lboost_program_options
+gvar_test_SOURCES = gvar_test.cpp
+gvar_test_LDADD = -lboost_program_options
