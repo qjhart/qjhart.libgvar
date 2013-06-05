@@ -1,7 +1,7 @@
 MAINTAINERCLEANFILES    = Makefile.in
 ACLOCAL_AMFLAGS = -I m4
 
-pkginclude_HEADERS      = selFloat.h cdaTime.h  frameCheck.h Gvar.h  LineDoc.h  SourceChannelIDText.h  SpaceCraftIDText.h Header.h Block0Doc.h  Block.h
+pkginclude_HEADERS      = selFloat.h cdaTime.h  frameCheck.h Gvar.h  LineDoc.h  SourceChannelIDText.h  SpaceCraftIDText.h Header.h Block0Doc.h  Block.h Exception.h
 
 lib_LTLIBRARIES           = libgvar.la
 
