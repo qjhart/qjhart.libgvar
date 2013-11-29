@@ -15,8 +15,8 @@ namespace Gvar {
       goodStart=30;
     else if (crc16(header+60,30)==CRC16_OK)
       goodStart=60;
-    else 
-      throw NoGoodHeader();
+    else
+      throw no_good_header();
 	
     BlockId = header[goodStart+0] ;
     WordSize = header[goodStart+1] ;

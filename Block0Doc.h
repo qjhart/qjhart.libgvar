@@ -72,7 +72,7 @@ namespace Gvar {
  
     // uint16_t Igvln; /*171 172*/
     // uint16_t Igvpx; /*173 174*/
-    // SelFloat  Subla; /*175 178*/
+    float  Subla; /*175 178*/
      float  Sublo; /*178 182*/
     // SelFloat  Sublo; /*178 182*/
     // uint8_t Czone; /*183*/
@@ -213,10 +213,17 @@ namespace Gvar {
     // uint8_t w6287_303[17] ; /* 6287 6203 */
     // uint8_t Parity_5387_6303 ; /* 6304 */
   
-    uint8_t Iofnc ; /* 6305 */
-    uint8_t Iofec ; /* 6306 */
-    uint16_t Iofni ; /* 6307 6308 */
-    uint16_t Iofei ; /* 6309 6310 */
+    /* In November 2009, these locations where changed see 'Copying
+       the Instrument Nadir and Detector Offsets from Block 11 to
+       Block 0 for GOES O and Beyond', A White Paper Prepared by SGT
+       for the Office of Satellite Operations, 9/21/2009
+       http://www.osd.noaa.gov/GVAR_Downloads/documents/GOES-O-GVAR_Change.pdf
+    */
+
+    uint8_t Iofnc ; 
+    uint8_t Iofec ; 
+    uint16_t Iofni ;
+    uint16_t Iofei ;
  
     // uint16_t Vis_detector_x_offset[8]; /* 6311 6325 */
     // uint16_t Ir_detector_x_offset[14]; /* 6326 6354 */
@@ -255,6 +262,7 @@ namespace Gvar {
     Block0Doc(Block *block);
 
     int ifram();
+    void print(ostream & out );
     void block0timeText(ostream & out); 
     void block0time(ostream & out );
     void NavigationParameters(ostream & out);
@@ -263,8 +271,6 @@ namespace Gvar {
 
     int spcid(); // SpaceCraft ID
     int spsid(); // SPSID
-
-    
 
     int frame() ; // frame number 
     int wpx(); // Western edge pixel
@@ -299,6 +305,7 @@ namespace Gvar {
      float lat0(); // Frame left longitude
      float lat1(); // Frame right longitude
   
+     float getSubla(); 
      float getSublo(); 
     /// int imc(); 
 
@@ -321,6 +328,7 @@ namespace Gvar {
    inline float Block0Doc::lat1() { return Ifse1; }
    inline float Block0Doc::lon0() { return Ifnw2; }
    inline float Block0Doc::lon1() { return Ifse2; }
+   inline float Block0Doc::getSubla() { return Subla; }
    inline float Block0Doc::getSublo() { return Sublo; }
 
   // inline void Block0Doc::reset() {G1cnt = 0; G2cnt = 0; }

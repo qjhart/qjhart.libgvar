@@ -1,6 +1,4 @@
 #include "Gvar.h"
-#include "SpaceCraftIDText.h"
-#include "SourceChannelIDText.h"
 
 namespace Gvar {
   LineDoc::LineDoc (Block* block) {
@@ -9,12 +7,9 @@ namespace Gvar {
 
 	uint16_t* unpacked=new uint16_t[MAX_BLOCK_SZ];
 
-	if ((((wordCount-2)*10/8)/5)*4 > MAX_BLOCK_SZ) {
-	  fprintf(stderr, "wordCount is too large: %d. Truncate it to %d\n",
-		  wordCount, (((MAX_BLOCK_SZ/4)*5)*8/10) + 2);
-	  fflush(stderr);
-	  wordCount = (((MAX_BLOCK_SZ/4)*5)*8/10) + 2;
-	}
+	if ((((wordCount-2)*10/8)/5)*4 > MAX_BLOCK_SZ) 
+	  throw linedoc_error();
+	// "wordCount is too large: "<< wordCount<<">"<<(((MAX_BLOCK_SZ/4)*5)*8/10) + 2);
 	
 	// The value 'wordCount' means the number of words (10 bits each)
 	// plus 2 (for CRC). So the number of bytes should be 
@@ -50,13 +45,8 @@ namespace Gvar {
 	/* if numOfPixels is greater than (MAX_BLOCK_SZ-16),  this linedoc data does
 	   not seem right. We ignore it here. */
 	if (numOfPixels > MAX_BLOCK_SZ-16) {
-	  fprintf(stderr, "LineDoc has size of %d, ignore it...\n", numOfPixels);
-	  fflush(stderr);
-	  numOfPixels = 0 ;
-	  LpixlsMsb = 0;
-	  LpixlsLsb = 0;
-	  LwordsMsb = 0;
-	  LwordsLsb = 0;
+	  //	  cerr << "LineDoc has size of "<< numOfPixels <<">"<<MAX_BLOCK_SZ-16;
+	  throw linedoc_error();
 	}
 	
 	data = new uint16_t[numOfPixels] ;
@@ -89,15 +79,9 @@ namespace Gvar {
 
       int numOfPixels = ((int)LpixlsMsb << 10) + LpixlsLsb ;
 
-      if (numOfPixels > MAX_BLOCK_SZ-startpos-16) {
-	  fprintf(stderr, "LineDoc has size of %d, ignore it...\n", numOfPixels);
-	  fflush(stderr);
-	  numOfPixels = 0 ;
-	  LpixlsMsb = 0;
-	  LpixlsLsb = 0;
-	  LwordsMsb = 0;
-	  LwordsLsb = 0;
-      }
+      if (numOfPixels > MAX_BLOCK_SZ-startpos-16)
+	throw linedoc_error();
+      //cerr << "LineDoc has size of "<<numOfPixels<<" > "<<MAX_BLOCK_SZ-startpos-16;
 
       data = new uint16_t[numOfPixels] ;
 
@@ -105,17 +89,10 @@ namespace Gvar {
       for(int j = k; (j < k + numOfPixels) && (j < MAX_BLOCK_SZ); j++) {
         data[j-k] = unpacked[j] ;
       }
-    }//if
-
-    else {
-      fprintf(stderr, "LineDoc does not have enough data...\n"); fflush(stderr);
-      LpixlsMsb = 0;
-      LpixlsLsb = 0;
-      LwordsMsb = 0;
-      LwordsLsb = 0;
-      data = new uint16_t[0];
+    } else {
+      //      cerr<<"LineDoc does not have enough data:" <<endl;
+      throw linedoc_error();
     }
-
 
   }//LineDoc(uint16_t*,int)
 
@@ -137,7 +114,7 @@ namespace Gvar {
 	out << "\n lidet : Detector ID                 " << lidet() ; 
 	
 	out << "\n licha : Source channel ID           " << licha() ;
-	out << "\n\t" << SourceChannelIDText[licha()];
+	//out << "\n\t" << SourceChannelIDText[licha()];
 	
 	out << "\n risct : Output scan count           " << risct() ; 
 	

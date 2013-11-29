@@ -1,19 +1,18 @@
 #ifndef GVAR_EXCEPTION_H
 #define GVAR_EXCEPTION_H
 
+#include <boost/exception/all.hpp>
 #include <iostream>
 #include <stdexcept>
 
-using std::runtime_error;
 namespace Gvar {
-  class CRCException : public runtime_error {
-  public:
-    CRCException(): runtime_error("CRC Check Failure") {}
-  };
-  class NoGoodHeader: public runtime_error {
-  public:
-  NoGoodHeader(): runtime_error("No good Header for Block"){}
-  };
+  typedef boost::error_info<struct tag_bad_crc,int> bad_crc;
+
+  struct file_read_error: virtual boost::exception, virtual std::exception { };
+  struct crc_error: virtual boost::exception, virtual std::exception { }; 
+  struct no_good_header: virtual boost::exception, virtual std::exception { }; 
+  struct linedoc_error: virtual boost::exception, virtual std::exception { }; 
+
 }
 
 #endif //GVAR_EXCEPTION_H

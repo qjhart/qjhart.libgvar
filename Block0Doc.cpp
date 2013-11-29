@@ -3,7 +3,6 @@
 
 #include <assert.h>  // required on comet-10; gcc --version => 3.3.5
 
-
 // this function reverses the bytes of a datum
 static void reverse_bytes(void* datum, unsigned len) {       
 	char* bin = (char*) datum;
@@ -101,6 +100,7 @@ namespace Gvar {
 
     Impdx = ((uint16_t)(data[164] << 8)) + ((uint16_t)data[165]) ;
 
+    Subla = gvarfloat2float( *((float*)&data[174]) );
     Sublo = gvarfloat2float( *((float*)&data[178]) );
 
      Ifnw1 = gvarfloat2float( *((float*)&data[230]) ); /*231 234*/
@@ -143,10 +143,17 @@ namespace Gvar {
     memcpy(&rec[11], epochIEEE, 2*sizeof(int));
 
   
-    Iofnc = data[6304]; /* 6305 */
-    Iofec = data[6305]; /* 6306 */
-    Iofni = ((uint16_t)(data[6306] << 8)) + ((uint16_t)data[6307]); /* 6307 6308 */
-    Iofei = ((uint16_t)(data[6308] << 8)) + ((uint16_t)data[6309]); /* 6309 6310 */
+    /* In November 2009, these locations where changed see 'Copying
+       the Instrument Nadir and Detector Offsets from Block 11 to
+       Block 0 for GOES O and Beyond', A White Paper Prepared by SGT
+       for the Office of Satellite Operations, 9/21/2009
+       http://www.osd.noaa.gov/GVAR_Downloads/documents/GOES-O-GVAR_Change.pdf
+    */
+    Iofnc = data[8032]; /* 8033-8033 F_IOFNC */
+    Iofec = data[8033]; /* 8034-8034 F_IOFEC */
+    /* 8035-8036 F_IOFNI   8037-8038 F_IOFEI */
+    Iofni = ((uint16_t)(data[8034] << 8)) + ((uint16_t)data[8035]); 
+    Iofei = ((uint16_t)(data[8036] << 8)) + ((uint16_t)data[8037]);
 
   }//Block0Doc
 
@@ -159,16 +166,16 @@ namespace Gvar {
 
         uint8_t Block0Doc::getIofnc() { 
 		return Iofnc;
-	}/* 6305 */
+	}
         uint8_t Block0Doc::getIofec() {
 		return Iofec;
-	}  /* 6306 */
+	}
         uint16_t Block0Doc::getIofni() {
 		return Iofni;
-	} /* 6307 6308 */
+	}
         uint16_t Block0Doc::getIofei() {
 		return Iofei;
-	} /* 6309 6310 */
+	}
 
 	int Block0Doc::getImc(){
 		return imc;
@@ -226,5 +233,19 @@ namespace Gvar {
     memcpy (imcIdentifier, Imc_identifier, 4) ;
   }
 
+  void Block0Doc::print(ostream & out){
+    out << "    spcid:"<<spcid();
+    out << "    frame:"<<frame();
+    out << "    AISCT:"<<aScanCount();
+    out << "    INSLN:"<<nsln()<<"\n";
+    out << "    IOFNC:"<<getIofnc()<<" IOFEC:"<<getIofec()<<" IOFNI:"<<getIofni()<< " IOFEI:"<<getIofei()<<"\n";
+    out << "    SUBLA:"<<getSubla()<<" SUBLO:"<<getSublo()<<"\n";
 
+    out<< boost::format
+      ("    imcIdentifier:%s\n") % getImc();
+    out<< boost::format
+      ("    nln:%5d\n    epx:%5d   wpx:%5d\n    sln:%5d\n") 
+      % nln() % wpx() % epx() % sln();
+  }
+  
 }//namespace Gvar

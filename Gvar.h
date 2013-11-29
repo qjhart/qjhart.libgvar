@@ -1,9 +1,16 @@
 #ifndef GVAR_H
 #define GVAR_H
 
+#include <boost/format.hpp>
+
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
+
+#include "LineDoc.h"
+#include "Block.h"
+#include "Exception.h"
 
 #ifndef BUFSIZ 
 #define BUFSIZ 4096
@@ -48,46 +55,95 @@
 #define IMAGERMAXCOUNTS ((1<<10)-1)
 #define SOUNDERMAXCOUNTS ((1<<16)-1)
 
-
 #define SPIXELS 11
 
 static const int MAXCOUNTS[] = { IMAGERMAXCOUNTS, SOUNDERMAXCOUNTS};
 
-//skip factors for channels
-static const int IVISPXLS[INSTRUMENTS][CHANNELS] ={ 
-  {1,4,4,4,4}, 
-  {1,1,1,1,1,
-   1,1,1,1,1,
-   1,1,1,1,1,
-   1,1,1,1 }  };
+static const char * SpaceCraftIDText[] = { 
+	" 0 ",
+	" 1 ",
+	" 2 ",
+	" 3 ", 
+	" 4 ",
+	" 5 ", 
+	" 6 ",
+	" 7 ",
+	" 8 GOES-I ",
+	" 9 GOES-J ",
+	"10 GOES-K ",
+	"11 GOES-L ",
+	"12 GOES-M ",
+	"13 GOES-N ",
+	"14 GOES-O ",
+	"15 GOES-P ",
+	"16 GOES-Q "
+};
 
-static const int IVISLINS[INSTRUMENTS][CHANNELS]={
-  {1,4,8,4,4},
-  {1,1,1,1,1,
-   1,1,1,1,1,
-   1,1,1,1,1,
-   1,1,1,1 }  };
+  /*
+    OLD GVAR Version I-L
+  static const char* channelsDesc[NUM_OF_CHANNELS] = {
+    "Channel 1, 0.52-0.75microns - cloud cover",
+    "Channel 2,   3.8-4.0microns - night cloud cover",
+    "Channel 3,   6.4-7.0microns - water vapor",
+    "Channel 4, 10.2-11.2microns - sea surface temp.",
+    "Channel 5, 11.5-12.5microns - sea surface temp."
+  } ;
+
+  static const int xRes[NUM_OF_CHANNELS] = {1,4,4,4,4} ;
+  static const int yRes[NUM_OF_CHANNELS] = {1,4,8,4,4} ;
+  */
+
+/* //skip factors for channels */
+/* static const int IVISPXLS[INSTRUMENTS][CHANNELS] ={  */
+/*   {1,4,4,4,4},  */
+/*   {1,1,1,1,1, */
+/*    1,1,1,1,1, */
+/*    1,1,1,1,1, */
+/*    1,1,1,1 }  }; */
+
+/* static const int IVISLINS[INSTRUMENTS][CHANNELS]={ */
+/*   {1,4,8,4,4}, */
+/*   {1,1,1,1,1, */
+/*    1,1,1,1,1, */
+/*    1,1,1,1,1, */
+/*    1,1,1,1 }  }; */
 
 // Imager & sounder constants
 
-static const int Channel[INSTRUMENTS] = { ICHANNELS, SCHANNELS};
-static const int Detector[INSTRUMENTS][CHANNELS]=
-{{ 8,2,1,2,2 }, 
- { 4,4,4,4,4,
-   4,4,4,4,4,
-   4,4,4,4,4,
-   4,4,4,4} };
+/* static const int Channel[INSTRUMENTS] = { ICHANNELS, SCHANNELS}; */
+/* static const int Detector[INSTRUMENTS][CHANNELS]= */
+/* {{ 8,2,1,2,2 },  */
+/*  { 4,4,4,4,4, */
+/*    4,4,4,4,4, */
+/*    4,4,4,4,4, */
+/*    4,4,4,4} }; */
 
-static const int Side[INSTRUMENTS][CHANNELS] =
-{ {2,2,2,2,2},
-  {1,1,1,1,1,
-   1,1,1,1,1,
-   1,1,1,1,1,
-   1,1,1,1 } }; 	
+/* static const int Side[INSTRUMENTS][CHANNELS] = */
+/* { {2,2,2,2,2}, */
+/*   {1,1,1,1,1, */
+/*    1,1,1,1,1, */
+/*    1,1,1,1,1, */
+/*    1,1,1,1 } }; 	 */
 
 inline int VALID(int a, int b) { return ((a==-1)?(b):(a)) ; } 
 
+#define NUM_OF_CHANNELS 6
+
 namespace Gvar {
+
+  // GOES Version O-Beyond
+  static const char* channelsDesc[NUM_OF_CHANNELS] = {
+    "Channel 1, 0.52-0.75 microns - cloud cover",
+    "Channel 2,   3.8-4.0 microns - night cloud cover",
+    "Channel 3,   6.4-7.0 microns - water vapor",
+    "Channel 4, 10.2-11.2 microns - sea surface temp.",
+    "Channel 5, 11.5-12.5microns - sea surface temp."
+    "Channel 6, 13.3 microns - sea surface temp."
+  } ;
+
+  static const int ew_res[NUM_OF_CHANNELS] = {1,4,4,4,4,4} ;
+  static const int ns_res[NUM_OF_CHANNELS] = {1,4,4,4,4,4} ;
+
   class LineDoc;
   class Block;
   class Header;

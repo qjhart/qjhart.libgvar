@@ -1,12 +1,10 @@
 // Inspired by
 //http://www.lammertbies.nl/comm/info/crc-calculation.html
+// Ours is CRC-CCITT (0xFFFF)  CRC_OK=0xE2F0 (~crc)
 
 #include "Gvar.h"
 
 namespace Gvar {
-
-#define                 P_CCITT     0x1021
-#define CRC_OK 0x
 
 static uint16_t crc_tab[256] = {
 0x0000,0x1021,0x2042,0x3063,0x4084,0x50A5,0x60C6,0x70E7,0x8108,0x9129,
@@ -37,6 +35,7 @@ static uint16_t crc_tab[256] = {
 0x4E55,0x5E74,0x2E93,0x3EB2,0x0ED1,0x1EF0};
 
 //   // crccitt_tab (above) is calculated like this
+//#define                 P_CCITT     0x1021
 //     /*******************************************************************\
 //     *                                                                   *
 //     *   static void init_crcccitt_tab( void );                          *
@@ -72,18 +71,20 @@ static uint16_t crc_tab[256] = {
 
 // }  /* init_crcccitt_tab */
     
-uint16_t update_crc_ccitt( uint16_t crc, uint8_t c ) {
-
+  uint16_t update_crc_ccitt( uint16_t crc, uint8_t c ) {
+    
     uint16_t tmp, short_c;
-
+    
     short_c  = 0x00ff & (uint16_t) c;
-
+    
     tmp = (crc >> 8) ^ short_c;
     crc = (crc << 8) ^ crc_tab[tmp];
     return crc;
+    
+  }  /* update_crc_ccitt */
 
-}  /* update_crc_ccitt */
 
+  
   uint16_t crc16(uint8_t* ptr,uint16_t len) {
     uint16_t crc=0xffff;
     //    if ( ! crc_tabccitt_init ) init_crcccitt_tab();

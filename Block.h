@@ -15,26 +15,13 @@ namespace Gvar {
 	Header* header ;
 	uint8_t* data;  // pointer to buffer for gvar data stream in memory
 	
-	Header* createHeader (uint8_t* buff) ;
-
-	uint8_t* m_rawData ;
-	int m_rawDataLen ;
-	
   public:
-	Block(uint8_t* buff, int buff_size); 
+	Block(Header *h, uint8_t* buff, int buff_size); 
 	~Block();
 	uint8_t* getData();//Find block of data and copy contents to Data
 	
 	Header* getHeader () ; // Return the header
 
-	// Return the gvar raw data for this block
-	inline uint8_t* getRawData () {
-	  return m_rawData ;
-	}
-	// Return the length of the gvar raw data for this block
-	inline int getRawDataLen () {
-	  return m_rawDataLen ;
-	}
   };
 
   class Block0 {
