@@ -26,17 +26,18 @@ namespace Gvar {
   }
 
   /** read block from a file instead of a socket
-   *  the 16 start bytes and 8 end bytes are removed 
-   *  when being stored on GOES10 
    */
   Header* File::readHeader() {
     if (fread(blkbuf,1,90,blkFile) != 90)
-      throw Gvar::file_read_error() << boost::errinfo_errno(errno);
+      return (Header *)NULL;
+      //      throw Gvar::file_read_error() << boost::errinfo_errno(errno);
 
-    printf("H1[%0x,%s] H2[%s] H3[%s]",
+    /*
+        printf("H1[%0x,%s] H2[%s] H3[%s]",
 	   crc16(blkbuf,30),(crc16(blkbuf,30)==CRC16_OK)?"OK":"BAD",
 	   (crc16(blkbuf+30,30)==CRC16_OK)?"OK":"BAD",
 	   (crc16(blkbuf+60,30)==CRC16_OK)?"OK":"BAD");
+    */
     Header* h = new Header((uint8_t*)blkbuf);
     return h;
   }
@@ -65,8 +66,8 @@ namespace Gvar {
       std::cerr << endl;
     }
     
-    printf("Block CRC:%0x %s\n",crc16(blkbuf,blkSz),
-	   (crc16(blkbuf,blkSz)==CRC16_OK)?"OK":"BAD");
+    //    printf("Block CRC:%0x %s\n",crc16(blkbuf,blkSz),
+    //	   (crc16(blkbuf,blkSz)==CRC16_OK)?"OK":"BAD");
     
     Block* block =  new Block (h, blkbuf,blkSz);
     

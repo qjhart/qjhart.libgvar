@@ -161,6 +161,8 @@ namespace Gvar {
 #include "LineDoc.h"
 #include "Block0Doc.h"
 #include "Exception.h"
+#include "GvarFile.h"
+#include "GvarStream.h"
 
 #endif // GVAR_H
   

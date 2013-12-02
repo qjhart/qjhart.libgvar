@@ -7,7 +7,6 @@
 #define NUM_OF_CHANNELS 6
 
 namespace Gvar {
-
   class Stream {
   private:
 	unsigned int seqnum;

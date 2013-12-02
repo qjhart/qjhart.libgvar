@@ -13,12 +13,16 @@ namespace Gvar {
   private:
 	
 	Header* header ;
+	int datalen;
 	uint8_t* data;  // pointer to buffer for gvar data stream in memory
 	
   public:
 	Block(Header *h, uint8_t* buff, int buff_size); 
 	~Block();
-	uint8_t* getData();//Find block of data and copy contents to Data
+	//       	uint8_t* getData();//Find block of data and copy contents to Data
+	bool crc16_ok();
+	uint8_t* getRawData();
+	int getRawDataLen();
 	
 	Header* getHeader () ; // Return the header
 

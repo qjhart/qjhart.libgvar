@@ -12,7 +12,7 @@ namespace Gvar {
 
     int wordcount = gvarHeader->wordCount() ;
     uint16_t* unpacked = new uint16_t[MAX_BLOCK_SZ] ;
-    unpack10(block->getData(), ((wordcount - 2) * 10)/8, unpacked) ;
+    unpack10(block->getRawData(), ((wordcount - 2) * 10)/8, unpacked) ;
 
     int Pixels = 0;
     int temp = 0;

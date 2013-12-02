@@ -6,8 +6,6 @@
 #define GVNETBUFFSIZE 32768
 
 namespace Gvar {
-
-
   class File {
   private:
 	int fd;

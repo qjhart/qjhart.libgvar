@@ -48,7 +48,7 @@ int recIndexFloat( int i ) {
 namespace Gvar {
   Block0Doc::Block0Doc(Block *block){
     this->block = block ;
-    uint8_t* data = block->getData () ;
+    uint8_t* data = block->getRawData () ;
 
     Spcid = data[0] ;
     Spsid = data[1] ;

@@ -13,8 +13,6 @@
 #include <fcntl.h>
 #define debug(args...) fprintf(stderr,args); fflush (stderr)
 
-#include "GvarStream.h"
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -22,6 +20,7 @@
 #include <netdb.h>
 
 #include "Gvar.h"
+#include "GvarStream.h"
 #include "Block.h"
 
 static unsigned char startpatt[8]={0xAA,0xD6,0x3E,0x69,0x02,0x5A,0x7F,0x55};
@@ -29,8 +28,7 @@ static unsigned char endpatt[8]={0x55,0x7F,0x5A,0x02,0x69,0x3E,0xD6,0xAA};
 
 namespace Gvar {
 
-  GvarStream::GvarStream(char *ipaddr,int port) {
-    workingOnFile = false;
+  Stream::Stream(char *ipaddr,int port) {
 
     if ((this->ipaddr = (char *)malloc(strlen(ipaddr)+1)) == (void *) 0) {
       delete this;
@@ -43,11 +41,9 @@ namespace Gvar {
     m_block0 = NULL ;
 
     m_prevFrameId = -1 ;
-    blkFile = NULL;
-
   }
  
-  GvarStream::~GvarStream () {
+  Stream::~Stream () {
 
     if (ipaddr != NULL) {
       delete ipaddr ;
@@ -57,14 +53,10 @@ namespace Gvar {
       delete m_block0 ;
     }
 
-    if (blkFile != NULL) {
-      fclose(blkFile);
-    }
-
     close () ;
   }
 
-  int GvarStream::connect(void)
+  int Stream::connect(void)
   {
 	int fd;
 	struct sockaddr_in sa;
@@ -94,7 +86,7 @@ namespace Gvar {
 	return(fd);
   }
 
-  bool GvarStream::listen (void)
+  bool Stream::listen (void)
   {
 	debug ("gvar listening\n");
 	this->fd=this->connect();
@@ -102,7 +94,7 @@ namespace Gvar {
 	return (fd != -1) ;
   }
 
-  Gvar::Block* GvarStream::readBlock () {
+  Gvar::Block* Stream::readBlock () {
     unsigned int seqnum;
 
     int datalen = 16 ;
@@ -141,14 +133,26 @@ namespace Gvar {
       }
     }
 
-    // debug("s:%d size:%d togo:%d total:%d\n",this->seqnum,datalen,this->end-this->bp,this->end-this->blkbuf);
-    Gvar::Block* block = 
-      new Gvar::Block (this->blkbuf+16,this->end-this->blkbuf-24);
-
+    Header *h;
+    int blkSz;
+    try {
+      h= new Header(this->blkbuf+16);
+      blkSz=h->wordCount()*h->wordSize()/8;
+      uint16_t crc=crc16(blkbuf+16+90,blkSz);
+      if (crc != CRC16_OK) 
+	throw crc_error() << bad_crc(crc);
+    } catch ( no_good_header & x ) {
+      std::cerr << "Block CRC Error";
+      if ( int const * mi=boost::get_error_info<bad_crc>(x) )
+      	std::cerr << " Bad CRC: " << *mi;
+      std::cerr << endl;
+    }
+    Block* block =  new Block (h, blkbuf+16+90,blkSz);
+    
     return block ;
   }
 
-  void GvarStream::close () {
+  void Stream::close () {
     if (fd != -1) {
       shutdown (fd, SHUT_RD) ;
       fd = -1 ;

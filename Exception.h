@@ -7,6 +7,7 @@
 
 namespace Gvar {
   typedef boost::error_info<struct tag_bad_crc,int> bad_crc;
+  typedef boost::error_info<struct tag_bad_line_doc,string> bad_line_doc;
 
   struct file_read_error: virtual boost::exception, virtual std::exception { };
   struct crc_error: virtual boost::exception, virtual std::exception { }; 

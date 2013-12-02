@@ -1,4 +1,5 @@
 #include "Gvar.h"
+#include <string>
 
 namespace Gvar {
   LineDoc::LineDoc (Block* block) {
@@ -7,10 +8,12 @@ namespace Gvar {
 
 	uint16_t* unpacked=new uint16_t[MAX_BLOCK_SZ];
 
-	if ((((wordCount-2)*10/8)/5)*4 > MAX_BLOCK_SZ) 
+	if ((((wordCount-2)*10/8)/5)*4 > MAX_BLOCK_SZ) {
+	  ostringstream os;
+	  std::cout << "wordCount is too large: " << wordCount<<">"<<(((MAX_BLOCK_SZ/4)*5)*8/10) + 2;
+	  std::cerr << os;
 	  throw linedoc_error();
-	// "wordCount is too large: "<< wordCount<<">"<<(((MAX_BLOCK_SZ/4)*5)*8/10) + 2);
-	
+	}
 	// The value 'wordCount' means the number of words (10 bits each)
 	// plus 2 (for CRC). So the number of bytes should be 
 	// ((wordCount-2)*10)/8.
@@ -21,7 +24,7 @@ namespace Gvar {
 	  //return ;
 	  }*/
 	
-	unpack10 (block->getData (), ((wordCount-2)*10)/8, unpacked) ;
+	unpack10 (block->getRawData (), ((wordCount-2)*10)/8, unpacked) ;
 	
 	Spcid = unpacked[0] ;
 	Spsid = unpacked[1] ;
@@ -45,8 +48,10 @@ namespace Gvar {
 	/* if numOfPixels is greater than (MAX_BLOCK_SZ-16),  this linedoc data does
 	   not seem right. We ignore it here. */
 	if (numOfPixels > MAX_BLOCK_SZ-16) {
-	  //	  cerr << "LineDoc has size of "<< numOfPixels <<">"<<MAX_BLOCK_SZ-16;
-	  throw linedoc_error();
+	  ostringstream os;
+	  os << "LineDoc has size of "<< numOfPixels <<">"<<MAX_BLOCK_SZ-16;
+	  std::cerr << "bAR LineDoc has size of "<< numOfPixels <<">"<<MAX_BLOCK_SZ-16;
+	  throw linedoc_error() << bad_line_doc(os.str());
 	}
 	
 	data = new uint16_t[numOfPixels] ;
@@ -79,10 +84,12 @@ namespace Gvar {
 
       int numOfPixels = ((int)LpixlsMsb << 10) + LpixlsLsb ;
 
-      if (numOfPixels > MAX_BLOCK_SZ-startpos-16)
-	throw linedoc_error();
-      //cerr << "LineDoc has size of "<<numOfPixels<<" > "<<MAX_BLOCK_SZ-startpos-16;
-
+      if (numOfPixels > MAX_BLOCK_SZ-startpos-16) {
+	  ostringstream os;
+	  os << "LineDoc has size of "<<numOfPixels<<" > "<<MAX_BLOCK_SZ-startpos-16;
+	  std::cout << "FOO LineDoc has size of "<<numOfPixels<<" > "<<MAX_BLOCK_SZ-startpos-16;
+	  throw linedoc_error();
+      }
       data = new uint16_t[numOfPixels] ;
 
       int k = 16 + startpos;
@@ -90,7 +97,9 @@ namespace Gvar {
         data[j-k] = unpacked[j] ;
       }
     } else {
-      //      cerr<<"LineDoc does not have enough data:" <<endl;
+      ostringstream os;
+      std::cout << "LineDoc does not have enough data:";
+      std::cerr << os;
       throw linedoc_error();
     }
 
