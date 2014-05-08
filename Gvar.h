@@ -154,6 +154,15 @@ namespace Gvar {
   // This function converts every 10 bits of a byte array to 16 bits.
   void unpack10 (uint8_t*, int, uint16_t*) ;
 
+  class IO {
+  public: 
+    virtual Header* readHeader() = 0;
+    virtual Block *readBlock(Header *) = 0;
+    virtual Block *readBlock() = 0;
+    virtual void close() = 0 ;
+    int eof() { return 0; }
+  };
+
   uint16_t crc16(uint8_t* ptr,uint16_t len);
 }
 

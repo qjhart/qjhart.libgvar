@@ -11,7 +11,6 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <fcntl.h>
-#define debug(args...) fprintf(stderr,args); fflush (stderr)
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -88,13 +87,12 @@ namespace Gvar {
 
   bool Stream::listen (void)
   {
-	debug ("gvar listening\n");
 	this->fd=this->connect();
 	this->seqnum=0;
 	return (fd != -1) ;
   }
 
-  Gvar::Block* Stream::readBlock () {
+  int Stream::readBlkBuf () {
     unsigned int seqnum;
 
     int datalen = 16 ;
@@ -103,13 +101,13 @@ namespace Gvar {
       numread=recv(fd, blkbuf+bp,datalen-bp, MSG_NOSIGNAL);
       if (numread<=0) {
 	fprintf(stderr, "Read error") ; fflush (stderr) ;
-	return NULL ;
+	return 0;
       }
       bp+=numread;
       if (bp==16) {
         if (memcmp(blkbuf,startpatt,8)) {
 	  fprintf (stderr, "Bad Start") ; fflush (stderr) ;
-	  return NULL ;
+	  return 0;
 	}
         datalen=ntohl(*((int*)(blkbuf+8)))+24;
         seqnum=ntohl(*((int*)(blkbuf+12)));
@@ -119,7 +117,7 @@ namespace Gvar {
 
         if (datalen>GVNETBUFFSIZE) {
 	  fprintf (stderr, "Block Too Big") ; fflush (stderr) ;
-	  return NULL ;
+	  return 0;
 	}
         this->seqnum=seqnum;
         this->end=this->blkbuf+datalen;
@@ -127,29 +125,37 @@ namespace Gvar {
       if (bp==datalen) {
         if (memcmp(blkbuf+datalen-8,endpatt,8)) {
 	  fprintf (stderr, "Bad End") ; fflush (stderr) ;
-	  return NULL ;
+	  return 0;
 	}
         break ;
       }
     }
+    return datalen;
+  }
 
-    Header *h;
+  Header* Stream::readHeader () {
+    int datalen;
     int blkSz;
-    try {
-      h= new Header(this->blkbuf+16);
-      blkSz=h->wordCount()*h->wordSize()/8;
-      uint16_t crc=crc16(blkbuf+16+90,blkSz);
-      if (crc != CRC16_OK) 
-	throw crc_error() << bad_crc(crc);
-    } catch ( no_good_header & x ) {
-      std::cerr << "Block CRC Error";
-      if ( int const * mi=boost::get_error_info<bad_crc>(x) )
-      	std::cerr << " Bad CRC: " << *mi;
-      std::cerr << endl;
-    }
-    Block* block =  new Block (h, blkbuf+16+90,blkSz);
-    
+    datalen=this->readBlkBuf();
+
+    if (datalen < 90+16)
+      return (Header *)NULL;
+
+    Header *h=new Header(blkbuf+16);
+    return h;
+  }
+
+  Block * Stream::readBlock(Header *h) {
+    int blkSz=h->wordCount()*h->wordSize()/8;
+    uint16_t crc=crc16(blkbuf+90+16,blkSz);
+    // if (crc != CRC16_OK)
+    //   std::cerr << "Bad CRC: " << crc;
+    Block* block =  new Block (h, blkbuf+16+90,blkSz);    
     return block ;
+  }
+
+  Block* Stream::readBlock() {
+    return readBlock(readHeader());
   }
 
   void Stream::close () {

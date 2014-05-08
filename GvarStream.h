@@ -7,7 +7,7 @@
 #define NUM_OF_CHANNELS 6
 
 namespace Gvar {
-  class Stream {
+  class Stream : public IO {
   private:
 	unsigned int seqnum;
 	char *ipaddr;
@@ -33,9 +33,10 @@ namespace Gvar {
  
 	~Stream();
 	bool listen(void);
-
 	void close () ;
-
+	int readBlkBuf();
+        Gvar::Header* readHeader () ;
+        Gvar::Block* readBlock (Gvar::Header*) ;
         Gvar::Block* readBlock () ;
 
   };

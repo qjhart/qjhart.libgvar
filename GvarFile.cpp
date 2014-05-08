@@ -57,20 +57,10 @@ namespace Gvar {
 
   Block* File::readBlock(Header *h) {
     int blkSz=h->wordCount()*h->wordSize()/8;
-    try {
-      File::read_blkbuf_crc(blkSz);
-          } catch ( no_good_header & x ) {
-      std::cerr << "Block CRC Error";
-      if ( int const * mi=boost::get_error_info<bad_crc>(x) )
-      	std::cerr << " Bad CRC: " << *mi;
-      std::cerr << endl;
-    }
-    
+    File::read_blkbuf_crc(blkSz);
     //    printf("Block CRC:%0x %s\n",crc16(blkbuf,blkSz),
-    //	   (crc16(blkbuf,blkSz)==CRC16_OK)?"OK":"BAD");
-    
+    //	   (crc16(blkbuf,blkSz)==CRC16_OK)?"OK":"BAD");    
     Block* block =  new Block (h, blkbuf,blkSz);
-    
     return block ;
   }
 

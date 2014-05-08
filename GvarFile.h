@@ -6,7 +6,7 @@
 #define GVNETBUFFSIZE 32768
 
 namespace Gvar {
-  class File {
+  class File : public IO {
   private:
 	int fd;
 	uint8_t blkbuf[GVNETBUFFSIZE];

@@ -7,14 +7,17 @@ namespace po = boost::program_options;
 
 using namespace std;
 
-#include "GvarFile.h"
+#include "Gvar.h"
 #include <stdlib.h>
 
 using namespace Gvar;
 
 int main(int ac, char* av[]) {
   std::string file;
+  int port;
+  std::string ip;
   bool vip=false;
+  Gvar::IO* gvar;
 
   try {
     po::options_description desc("Allowed options");
@@ -22,6 +25,8 @@ int main(int ac, char* av[]) {
       ("help", "produce help message")
       ("vip", "Automated Sciences VIP format")
       ("file", po::value<string>(), "input file")
+      ("ip",po::value<string>(&ip),"input IP Address")
+      ("port",po::value<int>(&port)->default_value(21009),"Input port")
       //      ("file", po::value< vector<string> >(), "input files")
       ;
     po::positional_options_description p;
@@ -40,10 +45,25 @@ int main(int ac, char* av[]) {
       vip=true;
     }
     if (vm.count("file")==0) {
-      cout << "No file specified" <<endl <<desc << endl;
-      return 1;
+      if (vm.count("ip")==0) {
+	cout << "No Input specified" <<endl <<desc << endl;
+	return 1;
+      } else {
+	
+	ip=vm["ip"].as<string>();
+	port=vm["port"].as<int>();
+	cout << "Using IP " << ip << " and port " << port;
+	Gvar::Stream * gvars = new Gvar::Stream((char *)ip.c_str(),port);
+	gvars->listen();
+	gvar=gvars;
+      }
     } else {
       file=vm["file"].as<string>();
+      Gvar::File *gvarf = new Gvar::File(file);
+      if(vip) {
+	gvarf->readVIPHeader();
+      }
+      gvar=gvarf;
     }
   }
    catch(exception & e) {
@@ -53,18 +73,13 @@ int main(int ac, char* av[]) {
   catch(...) {
     cerr << "Exception of unknown type!\n";
   }
-
-  Gvar::File* gvar;
-  gvar = new Gvar::File(file);
+  
   Block0* m_block0;
 
-  if(vip) {
-    gvar->readVIPHeader();
-  }
 
   int count = 0;
   while (true) {
-    cout << "HEADER:"<<++count << endl;
+    cout << "HEADER: "<<++count << endl;
     Header* header = gvar->readHeader();
     if (header==NULL)
       break;
