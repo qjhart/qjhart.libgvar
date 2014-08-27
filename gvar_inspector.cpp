@@ -17,6 +17,9 @@ int main(int ac, char* av[]) {
   int port;
   std::string ip;
   bool vip=false;
+  bool first=false;
+  bool shell=false;
+  bool proj=false;
   Gvar::IO* gvar;
 
   try {
@@ -26,6 +29,9 @@ int main(int ac, char* av[]) {
       ("vip", "Automated Sciences VIP format")
       ("file", po::value<string>(), "input file")
       ("ip",po::value<string>(&ip),"input IP Address")
+      ("0","Look for starting Block 0 file, also  IFRAM Start")
+      ("shell","Report output in shell script format, implies -0")
+      ("proj","Report Proj4 Projection Information, implies -0")
       ("port",po::value<int>(&port)->default_value(21009),"Input port")
       //      ("file", po::value< vector<string> >(), "input files")
       ;
@@ -43,6 +49,17 @@ int main(int ac, char* av[]) {
     }
     if (vm.count("vip")) {
       vip=true;
+    }
+    if (vm.count("shell")) {
+      shell=true;
+      first=true;
+    }
+    if (vm.count("0")) {
+      first=true;
+    }
+    if (vm.count("proj")) {
+      proj=true;
+      first=true;
     }
     if (vm.count("file")==0) {
       if (vm.count("ip")==0) {
@@ -76,62 +93,99 @@ int main(int ac, char* av[]) {
   
   Block0* m_block0;
 
-
   int count = 0;
-  while (true) {
-    cout << "HEADER: "<<++count << endl;
+  if (first) {
     Header* header = gvar->readHeader();
-    if (header==NULL)
-      break;
-    header->print(cout);
-    Block *block;
-    cout << "BLOCK:"<<count << endl;
-    block = gvar->readBlock(header);
+    if (header == NULL) 
+      throw file_read_error();
+    Block* block = gvar->readBlock(header);
     if (header->blockId() == 0) {
-      m_block0 = new Block0 (block);
+      m_block0 = new Block0(block);
       Block0Doc* block0doc = m_block0->getBlock0Doc();
-      block0doc->print(cout);
-    } else if (header->blockId () == 1 || 
-           header->blockId () == 2) {
-      Block1or2* block1or2 = new Block1or2 (block) ;
-      uint16_t* data;
-      LineDoc* lineDoc;
-      int numLines;
-      numLines = block1or2->getNumLineDocs();
-      cout << "numLineDocs: "<<numLines;
-
-      for(int i=0; i<numLines; i++) {
-        data = block1or2->getData(i) ;
-        lineDoc = block1or2->getLineDoc(i) ;
-	lineDoc->print(cout);
-	//	if(lineDoc->licha() >= 2 && lineDoc->licha() <= 6 ) {
-	// writeDataToChannel (lineDoc->licha()-1, data, 
-	//			      block1or2->getDataLen(i)) ;
-	//	}
+      if (block0doc == NULL or block0doc->rScanCount() != 1)
+	throw file_read_error();
+      if (proj) {
+	cout<<"+proj=goes +goes="<<block0doc->spcid()
+	    <<" +nsinc="<<block0doc->getIofni()
+	    <<" +ewinc="<<block0doc->getIofei()<<"\n";
+      } else if (shell) {
+	cout<<"goes="<<block0doc->spcid()<<"\n";
+	cout<<"spcid="<<block0doc->spcid()<<"\n";
+	cout<<"iofni="<<block0doc->getIofni()<<"\n";
+	cout<<"iofei="<<block0doc->getIofei()<<"\n";
+	cout<<"risct="<<block0doc->rScanCount()<<"\n";
+	cout<<"ifram="<<block0doc->frame()<<"\n";
+	cout<<"nsln="<<block0doc->nsln()<<"\n";
+	cout<<"nln="<<block0doc->nln()<<"\n";
+	cout<<"epx="<<block0doc->epx()<<"\n";
+	cout<<"wpx="<<block0doc->wpx()<<"\n";
+	cout<<"sln="<<block0doc->sln()<<"\n";
+      }else {
+	block0doc->print(cout);
       }
-    }// end else if block 1-2
-    else if (header->blockId () >= 3 && 
-	     header->blockId () <= 10) {
-      Block3to10* block3to10 = new Block3to10 (block) ;
-      uint16_t* data;
-      LineDoc* lineDoc;
-      
-      data = block3to10->getData();
-
-      lineDoc = block3to10->getLineDoc() ;
-      lineDoc->print(cout);
-      //	if(lineDoc->licha() == 1) {
+    }
+  } else {
+    while (true) {
+      cout << "HEADER: "<<++count << endl;
+      Header* header = gvar->readHeader();
+      if (header==NULL)
+	break;
+      header->print(cout);
+      Block *block;
+      cout << "BLOCK:"<<count << endl;
+      block = gvar->readBlock(header);
+      if (header->blockId() == 0) {
+	m_block0 = new Block0 (block);
+	Block0Doc* block0doc = m_block0->getBlock0Doc();
+	block0doc->print(cout);
+	if (first) {  // Exit after first.
+	  break;
+	}
+      } else if (header->blockId () == 1 || 
+		 header->blockId () == 2) {
+	if (first) { // Error, first block not Block 0
+	  break;
+	}
+	Block1or2* block1or2 = new Block1or2 (block) ;
+	uint16_t* data;
+	LineDoc* lineDoc;
+	int numLines;
+	numLines = block1or2->getNumLineDocs();
+	cout << "numLineDocs: "<<numLines;
+	
+	for(int i=0; i<numLines; i++) {
+	  data = block1or2->getData(i) ;
+	  lineDoc = block1or2->getLineDoc(i) ;
+	  lineDoc->print(cout);
+	  //	if(lineDoc->licha() >= 2 && lineDoc->licha() <= 6 ) {
+	  // writeDataToChannel (lineDoc->licha()-1, data, 
+	  //			      block1or2->getDataLen(i)) ;
+	  //	}
+	}
+      }// end else if block 1-2
+      else if (header->blockId () >= 3 && 
+	       header->blockId () <= 10) {
+	Block3to10* block3to10 = new Block3to10 (block) ;
+	uint16_t* data;
+	LineDoc* lineDoc;
+	
+	data = block3to10->getData();
+	
+	lineDoc = block3to10->getLineDoc() ;
+	lineDoc->print(cout);
+	//	if(lineDoc->licha() == 1) {
 	//  if((lineDoc->lidet() >= 1) && (lineDoc->lidet() <= 8)) {
 	//    writeDataToChannel (lineDoc->licha()-1, data, 
 	//				block3to10->getDataLen()) ;
 	//	}
 	// }//if
-    } // end else if block 3-10
-    else { // skip other blocks
+      } // end else if block 3-10
+      else { // skip other blocks
+      }
+      cout << "EOF:"<<gvar->eof();
+      if (gvar->eof())
+	break;
     }
-    cout << "EOF:"<<gvar->eof();
-    if (gvar->eof())
-      break;
   }
   gvar->close();
   delete gvar ;

@@ -236,6 +236,7 @@ namespace Gvar {
   void Block0Doc::print(ostream & out){
     out << "    spcid:"<<spcid();
     out << "    frame:"<<frame();
+    out << "    RISCT:"<<rScanCount();
     out << "    AISCT:"<<aScanCount();
     out << "    INSLN:"<<nsln()<<"\n";
     out << "    IOFNC:"<<getIofnc()<<" IOFEC:"<<getIofec()<<" IOFNI:"<<getIofni()<< " IOFEI:"<<getIofei()<<"\n";

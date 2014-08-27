@@ -281,6 +281,7 @@ namespace Gvar {
     int nln(); // Northern edge pixel
     int sln(); // Sothern edge pixel
     int aScanCount(); // Absoulute scan count
+    int rScanCount(); // Relative scan count
     CdaTime* getCurrentTime(); //returns current frame time.b
  
     // return imc identifier, and put it into imcIdentifier parameter.
@@ -321,6 +322,7 @@ namespace Gvar {
   inline int Block0Doc::nsln () { return Insln; }
   inline int Block0Doc::nln() { return Infln; } 
   inline int Block0Doc::sln() { return Isfln; } 
+  inline int Block0Doc::rScanCount() { return Risct; } 
   inline int Block0Doc::aScanCount() { return Aisct; } 
   // inline int Block0Doc::instrument() { return imager; }
   inline int Block0Doc::frame() { return (int)Ifram ; }
