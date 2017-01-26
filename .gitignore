@@ -1,0 +1,15 @@
+*.o
+*.lo
+*~
+*-
+.libs
+.deps
+Makefile
+autom4te.cache
+config.log
+config.status
+config
+gvar_inspector
+libgvar.la
+libtool
+m4
